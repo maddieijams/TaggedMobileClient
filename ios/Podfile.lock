@@ -316,6 +316,8 @@ PODS:
     - Google-Maps-iOS-Utils (= 4.1.0)
     - GoogleMaps (= 7.0.0)
     - React-Core
+  - react-native-image-picker (4.8.5):
+    - React-Core
   - react-native-maps (1.1.0):
     - React-Core
   - React-perflogger (0.69.2)
@@ -440,6 +442,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-geolocation-service (from `../node_modules/react-native-geolocation-service`)
   - react-native-google-maps (from `../node_modules/react-native-maps`)
+  - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -521,6 +524,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-geolocation-service"
   react-native-google-maps:
     :path: "../node_modules/react-native-maps"
+  react-native-image-picker:
+    :path: "../node_modules/react-native-image-picker"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   React-perflogger:
@@ -590,6 +595,7 @@ SPEC CHECKSUMS:
   React-logger: 9a6c684d5cd56c4129e0c2842dba75c4bfb1e981
   react-native-geolocation-service: 7c9436da6dfdecd9526c62eac62ea2bc3f0cc8ea
   react-native-google-maps: ddb50b6803641170d52c22d24629c51086bbd27e
+  react-native-image-picker: cd420f97f6ed6ff74fc4686d27dbcfdbd051db91
   react-native-maps: de23d141fa0289d1896739d0ddc8c5d11d9ca800
   React-perflogger: 281c34e42f13245c7a4d6932364d9182f8655e1a
   React-RCTActionSheet: 92f4292754a1b4a0e42bf9b1489206a06f878929

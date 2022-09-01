@@ -6588,6 +6588,11 @@
   "resolved" "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.0.7.tgz"
   "version" "0.0.7"
 
+"react-native-image-picker@^4.8.5":
+  "integrity" "sha512-+pQxkjO8cKv4RKTHOFS0fSHQ11HkWgb+imUPSOS8mwoChkR33aSuzV/6P4t9JCJgsus4qLAlB6BUosdIxw7GTA=="
+  "resolved" "https://registry.npmjs.org/react-native-image-picker/-/react-native-image-picker-4.8.5.tgz"
+  "version" "4.8.5"
+
 "react-native-maps@1.1.0":
   "integrity" "sha512-PmdEVCisYkbvS5qKn/N5jiAP/zoUau0PBOc4CAil3lSMzLLwIqiLUzK1VNKQnbxwOaJalTZFxBoRUyPGgVAvmQ=="
   "resolved" "https://registry.npmjs.org/react-native-maps/-/react-native-maps-1.1.0.tgz"
@@ -6713,7 +6718,7 @@
     "react-shallow-renderer" "^16.13.1"
     "scheduler" "^0.21.0"
 
-"react@^16.0.0 || ^17.0.0", "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^18.0.0", "react@>= 17.0.1", "react@>=16.0.0", "react@>=16.13.1", "react@18.0.0":
+"react@*", "react@^16.0.0 || ^17.0.0", "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^18.0.0", "react@>= 17.0.1", "react@>=16.0.0", "react@>=16.13.1", "react@18.0.0":
   "integrity" "sha512-x+VL6wbT4JRVPm7EGxXhZ8w8LTROaxPXOqhlGyVSrv0sB1jkyFGgXxJ8LVoPRLvPR6/CIZGFmfzqUa2NYeMr2A=="
   "resolved" "https://registry.npmjs.org/react/-/react-18.0.0.tgz"
   "version" "18.0.0"

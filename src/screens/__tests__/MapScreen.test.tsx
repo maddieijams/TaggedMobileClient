@@ -16,4 +16,6 @@ describe('<MapScreen />', () => {
       expect(getByTestId('map')).toBeDefined();
     });
   });
+
+  it('should render all existing markers', () => {});
 });
