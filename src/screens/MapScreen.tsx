@@ -4,6 +4,7 @@ import MapView, {
   Marker,
   MapMarkerProps,
   PROVIDER_GOOGLE,
+  MapPressEvent,
 } from 'react-native-maps';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import Geolocation from 'react-native-geolocation-service';
@@ -24,6 +25,10 @@ export default function MapScreen() {
   // current location and clicked location?
   const [location, setLocation] = useState<Coords | null>(null);
   const [markers, setMarkers] = useState<GraffitiMarker[]>([]);
+
+  useEffect(() => {
+    console.log(markers);
+  }, [markers]);
 
   useEffect(() => {
     fetch('http://localhost:3000/graffitis')
@@ -94,11 +99,16 @@ export default function MapScreen() {
     );
   }, []);
 
+  const handleMapPress = (e: MapPressEvent) => {
+    console.log(e.nativeEvent.coordinate);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       {location && (
         <MapView
+          onPress={handleMapPress}
           testID="map"
           style={styles.map}
           provider={PROVIDER_GOOGLE}

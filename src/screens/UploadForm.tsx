@@ -11,7 +11,7 @@ export interface GraffitiData {
 }
 
 export default function UploadForm() {
-  const [data, setData] = useState<GraffitiData>({
+  const [formData, setFormData] = useState<GraffitiData>({
     title: '',
     description: '',
     // pass these in as props from map
@@ -19,6 +19,10 @@ export default function UploadForm() {
     lng: 0,
     imageId: '',
   });
+
+  React.useEffect(() => {
+    console.log('FORM DATA STATE:', formData);
+  }, [formData]);
 
   return (
     <View>
@@ -28,16 +32,18 @@ export default function UploadForm() {
         onPress={() =>
           launchImageLibrary(
             {mediaType: 'photo'},
-            ({assets, didCancel, errorCode, errorMessage}) => {
-              fetch('http://localhost:3000/graffitis', {
+            async ({assets, didCancel, errorCode, errorMessage}) => {
+              const res = await fetch('http://localhost:3000/graffitis', {
                 method: 'POST',
                 // should this be uri?
-                body: JSON.stringify({...data, imageId: (assets ?? [])[0].uri}),
-              })
-                .then(res => res.json())
-                .then(json => {
-                  // do something with error?
-                });
+                body: JSON.stringify({
+                  ...formData,
+                  imageId: (assets ?? [])[0].uri as string,
+                }),
+              });
+              const data = await res.json();
+              console.log('UPLOADED PHOTO DATA', data);
+              setFormData({...formData, imageId: assets![0] as any});
             },
           )
         }
