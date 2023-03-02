@@ -1,51 +1,52 @@
-import React, {useEffect, useState} from 'react';
-import {Platform, SafeAreaView, StatusBar, StyleSheet} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {
+  Platform,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import MapView, {
   Marker,
   MapMarkerProps,
   PROVIDER_GOOGLE,
   MapPressEvent,
+  Region,
+  LongPressEvent,
+  LatLng,
+  Callout,
+  MapMarker,
 } from 'react-native-maps';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import Geolocation from 'react-native-geolocation-service';
 import {customStyleMap} from '../styles';
-import {GraffitiData} from './UploadForm';
+import {GraffitiMarker, Screen, UserAddedGraffiti} from '../App';
 
-interface Coords {
-  latitude: number;
-  longitude: number;
-}
-
-interface GraffitiMarker extends MapMarkerProps {
-  imageId: string;
+interface IProps {
+  setScreen: React.Dispatch<React.SetStateAction<Screen>>;
+  userAddedMarker: UserAddedGraffiti;
+  setUserAddedMarker: React.Dispatch<React.SetStateAction<UserAddedGraffiti>>;
+  markers: GraffitiMarker[];
 }
 
 // click on the map to add a new graffiti
-export default function MapScreen() {
-  // current location and clicked location?
-  const [location, setLocation] = useState<Coords | null>(null);
-  const [markers, setMarkers] = useState<GraffitiMarker[]>([]);
+export default function MapScreen({
+  setScreen,
+  userAddedMarker,
+  setUserAddedMarker,
+  markers,
+}: IProps) {
+  const [location, setLocation] = useState<LatLng | null>(null);
+  const markerRef = useRef<MapMarker>(null);
 
-  useEffect(() => {
-    console.log(markers);
-  }, [markers]);
-
-  useEffect(() => {
-    fetch('http://localhost:3000/graffitis')
-      .then(res => res.json())
-      .then((data: GraffitiData[]) => {
-        console.log(data);
-        const mappedMarkers: GraffitiMarker[] = data.map(
-          ({title, description, lat, lng, imageId}) => ({
-            title,
-            description,
-            coordinate: {latitude: lat, longitude: lng},
-            imageId,
-          }),
-        );
-        setMarkers(mappedMarkers);
-      });
+  const showCallout = useCallback(() => {
+    if (markerRef?.current) markerRef.current.showCallout();
   }, []);
+
+  useEffect(() => {
+    showCallout();
+  }, [userAddedMarker]);
 
   const handleLocationPermission = async () => {
     let permissionCheck = '';
@@ -99,44 +100,70 @@ export default function MapScreen() {
     );
   }, []);
 
-  const handleMapPress = (e: MapPressEvent) => {
-    console.log(e.nativeEvent.coordinate);
+  const handleLongPress = (e: LongPressEvent) => {
+    const {latitude, longitude} = e.nativeEvent.coordinate;
+    // setScreen(true);
+    setUserAddedMarker({...userAddedMarker, lat: latitude, lng: longitude});
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      {location && (
-        <MapView
-          onPress={handleMapPress}
-          testID="map"
-          style={styles.map}
-          provider={PROVIDER_GOOGLE}
-          initialRegion={{
-            latitude: 44.590182,
-            longitude: -123.2438848,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-          showsUserLocation={true}
-          customMapStyle={customStyleMap}
-          paddingAdjustmentBehavior="automatic"
-          showsMyLocationButton={true}
-          showsBuildings={true}
-          maxZoomLevel={17.5}
-          loadingEnabled={true}
-          loadingIndicatorColor="#fcb103"
-          loadingBackgroundColor="#242f3e">
-          {markers.map(({title, description, coordinate}, i) => (
-            <Marker
-              title={title}
-              description={description}
-              coordinate={coordinate}
-              key={i}
-            />
-          ))}
-        </MapView>
-      )}
+      <MapView
+        // onPress={handleMapPress}
+        testID="map"
+        style={styles.map}
+        provider={PROVIDER_GOOGLE}
+        initialRegion={{
+          latitude: 38.943868,
+          longitude: -109.8516022,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+        // region={
+        //   {...location, latitudeDelta: 0.0922, longitudeDelta: 0.0421} as Region
+        // }
+        onLongPress={handleLongPress}
+        showsUserLocation={true}
+        customMapStyle={customStyleMap}
+        paddingAdjustmentBehavior="automatic"
+        showsMyLocationButton={true}
+        showsBuildings={true}
+        maxZoomLevel={17.5}
+        loadingEnabled={true}
+        loadingIndicatorColor="#fcb103"
+        loadingBackgroundColor="#242f3e">
+        {markers.map(({title, description, coordinate}, i) => (
+          <Marker
+            title={title}
+            description={description}
+            coordinate={coordinate}
+            key={i}
+          />
+        ))}
+        {userAddedMarker && (
+          <Marker
+            ref={markerRef}
+            coordinate={{
+              latitude: userAddedMarker.lat,
+              longitude: userAddedMarker.lng,
+            }}
+            pinColor={'yellow'}
+            onPress={() => showCallout()}>
+            <Callout
+              // title={`${userAddedMarker.lat}, ${userAddedMarker.lng}`}
+              // description={userAddedMarker.description}
+              onPress={() => setScreen('upload')}>
+              <View>
+                <Text>
+                  Click here to add a new graffiti at {userAddedMarker.lat},
+                  {userAddedMarker.lng}
+                </Text>
+              </View>
+            </Callout>
+          </Marker>
+        )}
+      </MapView>
     </SafeAreaView>
   );
 }
@@ -148,5 +175,10 @@ const styles = StyleSheet.create({
   },
   map: {
     ...StyleSheet.absoluteFillObject,
+  },
+  customMarker: {
+    ...StyleSheet.absoluteFillObject,
+    width: '95%',
+    wordWrap: 'break-word',
   },
 });

@@ -1,54 +1,80 @@
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {
+  Callback,
+  launchCamera,
+  launchImageLibrary,
+} from 'react-native-image-picker';
 import React, {useState} from 'react';
-import {Button, TextInput, View} from 'react-native';
+import {Button, SafeAreaView, StyleSheet, TextInput, View} from 'react-native';
+import {GraffitiData, INITIAL_FORM_DATA, Screen} from '../App';
+import CloseButton from '../../components/CloseButton';
 
-export interface GraffitiData {
-  title: string;
-  description: string;
-  lat: number;
-  lng: number;
-  imageId: string;
+interface IProps {
+  formData: GraffitiData;
+  setFormData: React.Dispatch<React.SetStateAction<GraffitiData>>;
+  setScreen: React.Dispatch<React.SetStateAction<Screen>>;
 }
 
-export default function UploadForm() {
-  const [formData, setFormData] = useState<GraffitiData>({
-    title: '',
-    description: '',
-    // pass these in as props from map
-    lat: 0,
-    lng: 0,
-    imageId: '',
-  });
-
+export default function UploadForm({formData, setFormData, setScreen}: IProps) {
   React.useEffect(() => {
     console.log('FORM DATA STATE:', formData);
   }, [formData]);
 
+  // const handleUploadPhoto: Callback = async ({
+  //   assets,
+  //   // didCancel,
+  //   // errorCode,
+  //   // errorMessage,
+  // }) => {
+  //   setFormData({...formData, imageId: assets![0].base64 ?? ''});
+  // };
+
+  const backToPreviousScreen = () => setScreen(prevScreen => prevScreen);
+
+  const handleSubmit = async () => {
+    const body = new FormData();
+    body.append('title', formData.title);
+    body.append('description', formData.description);
+    body.append('imageId', formData.imageId);
+    body.append('lat', formData.lat);
+    body.append('lng', formData.lng);
+    const res = await fetch('http://localhost:3000/graffitis', {
+      method: 'POST',
+      body,
+    });
+    const data = await res.json();
+    console.log('SUBMITTED ->', data);
+    backToPreviousScreen();
+    setFormData(INITIAL_FORM_DATA);
+  };
+
   return (
-    <View>
-      <TextInput placeholder="Title" />
-      <TextInput placeholder="Description" />
+    <SafeAreaView style={styles.container}>
+      <CloseButton handleClose={() => backToPreviousScreen()} />
+      <TextInput
+        placeholder="Title"
+        onChangeText={text => setFormData({...formData, title: text})}
+      />
+      <TextInput
+        placeholder="Description"
+        onChangeText={text => setFormData({...formData, description: text})}
+      />
       <Button
         onPress={() =>
           launchImageLibrary(
-            {mediaType: 'photo'},
-            async ({assets, didCancel, errorCode, errorMessage}) => {
-              const res = await fetch('http://localhost:3000/graffitis', {
-                method: 'POST',
-                // should this be uri?
-                body: JSON.stringify({
-                  ...formData,
-                  imageId: (assets ?? [])[0].uri as string,
-                }),
-              });
-              const data = await res.json();
-              console.log('UPLOADED PHOTO DATA', data);
-              setFormData({...formData, imageId: assets![0] as any});
-            },
+            {mediaType: 'photo', includeBase64: true},
+            ({assets, didCancel, errorCode, errorMessage}) =>
+              setFormData({...formData, imageId: assets![0].base64 ?? ''}),
           )
         }
         title="Choose a photo"
       />
-    </View>
+      <Button onPress={handleSubmit} title="Submit" />
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
